@@ -1,7 +1,7 @@
 import json
 import random
 import config
-from models import Directors, DirectorsSchema, Movies
+from models import Directors, DirectorsSchema, Movies, MoviesSchema
 
 connex_app = config.connex_app
 connex_app.add_api('swagger.yml')
@@ -72,11 +72,15 @@ mock_data_director = {
     "uid": random.randint(11111, 999999)
 }
 
+mock_request_headers = {'Content-Type': 'application/json'}
+
 
 def test_post_director_create():
     url = '/api/director'
-    mock_request_headers = {'Content-Type': 'application/json'}
-    res = client.post(url, data=json.dumps(mock_data_director), headers=mock_request_headers)
+
+    res = client.post(url,
+                      data=json.dumps(mock_data_director),
+                      headers=mock_request_headers)
     data = json.loads(res.get_data())
     assert res.status_code == 201
     assert isinstance(data, dict)
@@ -84,14 +88,17 @@ def test_post_director_create():
 
 
 def test_put_director():
-    director = (Directors.query.filter(Directors.name == mock_data_director['name'])).outerjoin(Movies).one_or_none()
+    director = (Directors.query.filter(
+        Directors.name == mock_data_director['name'])
+    ).outerjoin(Movies).one_or_none()
     director_schema = DirectorsSchema()
     data = director_schema.dump(director)
     mock_data_director['gender'] = 2
 
     url = f"/api/director/{data['id']}"
-    mock_request_headers = {'Content-Type': 'application/json'}
-    res = client.put(url, data=json.dumps(mock_data_director), headers=mock_request_headers)
+    res = client.put(url,
+                     data=json.dumps(mock_data_director),
+                     headers=mock_request_headers)
     res_data = json.loads(res.get_data())
 
     assert res.status_code == 200
@@ -100,13 +107,17 @@ def test_put_director():
 
 
 def test_delete_director():
-    director = (Directors.query.filter(Directors.name == mock_data_director['name'])).outerjoin(Movies).one_or_none()
+    director = (Directors.query.filter(
+        Directors.name == mock_data_director['name'])
+    ).outerjoin(Movies).one_or_none()
     director_schema = DirectorsSchema()
     data = director_schema.dump(director)
     url = f"/api/director/{data['id']}"
     res = client.delete(url)
     assert res.status_code == 200
 
+
+###################################################################################################################
 
 def test_movie_read_all():
     url = '/api/movie?limit=3'
@@ -154,3 +165,62 @@ def test_movie_read_one_404():
     assert response.status_code == 404
     assert isinstance(data, dict)
     assert data['title'] == "Not Found"
+
+
+mock_data_movie = {
+    "budget": 11000,
+    "original_title": "Iron Man 21",
+    "overview": "Ironman 21",
+    "popularity": 10,
+    "release_date": "2010-10-10",
+    "revenue": 1100000,
+    "tagline": "Iron man 21",
+    "title": "Iron Man 21",
+    "uid": 112233,
+    "vote_average": 10,
+    "vote_count": 10
+}
+
+
+def test_post_movie_create():
+    director_id = 4768
+    url = f'/api/movie/{director_id}/movie'
+    res = client.post(url,
+                      data=json.dumps(mock_data_movie),
+                      headers=mock_request_headers)
+    data = json.loads(res.get_data())
+    assert res.status_code == 201
+    assert isinstance(data, dict)
+    assert data['title'] == mock_data_movie['title']
+
+
+def test_put_movie():
+    director_id = 4768
+    movie = (Movies.query.filter(
+        Movies.title == mock_data_movie['title']).filter(
+        Movies.uid == mock_data_movie['uid']).one_or_none())
+    movie_schema = MoviesSchema()
+    data = movie_schema.dump(movie)
+    mock_data_movie['popularity'] = 2
+
+    url = f"/api/director/{director_id}/movie/{data['id']}"
+    res = client.put(url,
+                     data=json.dumps(mock_data_movie),
+                     headers=mock_request_headers)
+    res_data = json.loads(res.get_data())
+
+    assert res.status_code == 200
+    assert isinstance(res_data, dict)
+    assert res_data['popularity'] == 2
+
+
+def test_delete_movie():
+    director_id = 4768
+    movie = (Movies.query.filter(
+        Movies.title == mock_data_movie['title']).filter(
+        Movies.uid == mock_data_movie['uid']).one_or_none())
+    movie_schema = MoviesSchema()
+    data = movie_schema.dump(movie)
+    url = f"/api/director/{director_id}/movie/{data['id']}"
+    res = client.delete(url)
+    assert res.status_code == 200

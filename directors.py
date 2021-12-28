@@ -9,6 +9,20 @@ def filter_list(argument, limit):
 
 
 def read_all(limit=0, order_by='id', order='asc'):
+    """get all list of director data from databases with paramater 
+        - limit for limit list length
+        - order_by for ordering by (id,name,gender,uid, or deparment)
+        - order for ordering descending or ascending
+
+    Args:
+        limit (int, optional): [limit list length]. Defaults to 0.
+        order_by (str, optional): [ordering by (id,name,gender,uid, or deparment)]. Defaults to 'id'.
+        order (str, optional): [ordering desc or asc]. Defaults to 'asc'.
+
+    Returns:
+        list: list of dict of director datas
+    """
+
     if order_by == 'name':
         directors = filter_list(db.desc(Directors.name),
                                 limit) if order == 'desc' else filter_list(
@@ -36,6 +50,14 @@ def read_all(limit=0, order_by='id', order='asc'):
 
 
 def read_one(director_id):
+    """Get specific director data from the databases
+
+    Args:
+        director_id (integer): id of the director
+
+    Returns:
+        Dict: Dict of director data including movies list
+    """
     director = (Directors.query.filter(
         Directors.id == director_id)).outerjoin(Movies).one_or_none()
 
@@ -48,6 +70,15 @@ def read_one(director_id):
 
 
 def create(director):
+    """Post to create new director to database
+
+    Args:
+        director (dict): object of director to add
+
+    Returns:
+        dict: dict of new director
+    """
+
     uid = director.get('uid')
 
     exsisting_director = (Directors.query.filter(
@@ -68,6 +99,16 @@ def create(director):
 
 
 def update(director_id, director):
+    """PUT or update director from database
+
+    Args:
+        director_id (integer): id of the director to update
+        director (dict): object of updated director
+
+    Returns:
+        dict,status code: object of updated director, and status code
+    """
+
     update_director = Directors.query.filter(
         Directors.id == director_id).one_or_none()
 
@@ -88,13 +129,22 @@ def update(director_id, director):
 
 
 def delete(director_id):
+    """DELETE director from database
+
+    Args:
+        director_id (integer): id of director to delete
+
+    Returns:
+        string: string of status
+    """
+
     director = Directors.query.filter(
         Directors.id == director_id).one_or_none()
 
     if director is not None:
         db.session.delete(director)
         db.session.commit()
-        return make_response(f"Directors {director} deleted", 200)
+        return make_response(f"Director {director} deleted", 200)
 
     else:
-        abort(404, f"Person not found for Id: {director_id}")
+        abort(404, f"Director not found for Id: {director_id}")
