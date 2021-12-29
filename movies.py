@@ -9,6 +9,17 @@ def filter_list(argument, limit):
 
 
 def read_all(limit=0, order_by='title', order='asc'):
+    """GET all movies list with paramaters limit, order by, and order
+
+    Args:
+        limit (int, optional): limit list of movie. Defaults to 0.
+        order_by (str, optional): order movie by id, popularity, vote_average, and release_data . Defaults to 'title'.
+        order (str, optional): order movie asc or desc. Defaults to 'asc'.
+
+    Returns:
+        list: list of movies
+    """
+
     if order_by == 'release_date':
         movies = filter_list(db.desc(Movies.release_date),
                              limit) if order == 'desc' else filter_list(
@@ -31,6 +42,16 @@ def read_all(limit=0, order_by='title', order='asc'):
 
 
 def read_one(director_id, movie_id):
+    """GET one specific movie by id and director id
+
+    Args:
+        director_id (int): id of director associated with
+        movie_id (int): id of the movie
+
+    Returns:
+        dict: dict of the movie
+    """
+
     movie = (Movies.query.join(Directors,
                                Directors.id == Movies.director_id).filter(
                                    Directors.id == director_id).filter(
@@ -43,7 +64,39 @@ def read_one(director_id, movie_id):
         abort(404, f"Movie not found for Id: {movie_id}")
 
 
+def search_title(title, limit=0):
+    """Get search query by title
+
+    Args:
+        title (string): title want to search
+        limit (int, optional): number of limit of list. Defaults to 0.
+
+    Returns:
+        list: list of searched movie
+    """
+    movies = (Movies.query.filter(
+        Movies.title.like(f"%{title}%")).all()) if limit < 1 else (
+            Movies.query.filter(Movies.title.like(f"%{title}%")).limit(limit))
+
+    if movies is not None:
+        schema = MoviesSchema(many=True)
+        data = schema.dump(movies)
+        return data
+    else:
+        abort(404, f"Movie not found")
+
+
 def create(director_id, movie):
+    """POST or create a new movie
+
+    Args:
+        director_id (int): id of director associated with
+        movie (dict): object of new movie
+
+    Returns:
+        dict: dict of new movie
+    """
+
     director = Directors.query.filter(
         Directors.id == director_id).one_or_none()
 
@@ -61,6 +114,17 @@ def create(director_id, movie):
 
 
 def update(director_id, movie_id, movie):
+    """PUT or update exsisting movie
+
+    Args:
+        director_id (int): id of director associated with
+        movie_id (int): id of the movie
+        movie (dict): object of edited movie
+
+    Returns:
+        dict: dict of new edited movie
+    """
+
     update_movie = (Movies.query.filter(
         Movies.director_id == director_id).filter(
             Movies.id == movie_id).one_or_none())
@@ -81,6 +145,16 @@ def update(director_id, movie_id, movie):
 
 
 def delete(director_id, movie_id):
+    """DELETE a movie
+
+    Args:
+        director_id (int): id of director associated with
+        movie_id (int): id of movie
+
+    Returns:
+        string: response string
+    """
+
     movie = (Movies.query.filter(Movies.director_id == director_id).filter(
         Movies.id == movie_id).one_or_none())
 

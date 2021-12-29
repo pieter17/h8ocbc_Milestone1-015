@@ -69,6 +69,32 @@ def read_one(director_id):
         abort(404, f"Director not found for Id: {director_id}")
 
 
+def search_name(name, limit=0):
+    """Get search query by name
+
+    Args:
+        name (string): name to search
+        limit (int, optional): number of limit search list. Defaults to 0.
+
+    Returns:
+        list: list of directors
+    """
+
+    search = "%{}%".format(name)
+
+    directors = (Directors.query.filter(
+        Directors.name.like(f'%{name}%')).outerjoin(Movies).all(
+        )) if limit < 1 else (Directors.query.filter(
+            Directors.name.like(f'%{name}%')).outerjoin(Movies).limit(limit))
+
+    if directors is not None:
+        director_schame = DirectorsSchema(many=True)
+        data = director_schame.dump(directors)
+        return data
+    else:
+        abort(404, f"Director not found")
+
+
 def create(director):
     """Post to create new director to database
 

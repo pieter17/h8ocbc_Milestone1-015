@@ -149,6 +149,90 @@ paths:
                 type: string
                 description: department of the Directors
 
+  /director/search:
+    get:
+      operationId: directors.search_name
+      tags:
+        - Directors
+      summary: search the entire set of Directors, sorted by last name
+      description: search the entire set of Directors, sorted by last name
+      parameters:
+        - name: name
+          in: query
+          type: string
+          required: true
+          description: name director list to get
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          description: limit director list
+      responses:
+        200:
+          description: Successfully read Directors set operation
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: Id of the Directors
+                id:
+                  type: integer
+                  description: First name of the Directors
+                gender:
+                  type: integer
+                  description: Last name of the Directors
+                uid:
+                  type: integer
+                  description: uid of Directors
+                department:
+                  type: string
+                  description: department of the Directors
+                movies:
+                  type: array
+                  items:
+                    properties:
+                      id:
+                        type: integer
+                        description: Id of the movie
+                      original_title:
+                        type: string
+                        description: original title of this movie
+                      budget:
+                        type: integer
+                        description: budget of this movie
+                      popularity:
+                        type: integer
+                        description: popularity of this movie
+                      release_date:
+                        type: string
+                        description: release date of this movie
+                      revenue:
+                        type: integer
+                        description: revenue of this movie
+                      title:
+                        type: string
+                        description: title of this movie
+                      vote_average:
+                        type: number
+                        description: vote average of this movie
+                      vote_count:
+                        type: integer
+                        description: vote count of this movie
+                      overview:
+                        type: string
+                        description: overview of this movie
+                      tagline:
+                        type: string
+                        description: tagline of this movie
+                      uid:
+                        type: integer
+                        description: uid of this movie
+                      director_id:
+                        type: integer
+                        description: id of this director assiciated with
+
   /director/{director_id}:
     get:
       operationId: directors.read_one
@@ -319,6 +403,88 @@ paths:
           type: string
           required: false
           description: order movie asc or desc
+      responses:
+        200:
+          description: Successfully read Movies for all directors operation
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: Id of the Directors
+                id:
+                  type: integer
+                  description: First name of the Directors
+                gender:
+                  type: integer
+                  description: Last name of the Directors
+                uid:
+                  type: integer
+                  description: uid of Directors
+                department:
+                  type: string
+                  description: department of the Directors
+                movies:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Id of the movie
+                    original_title:
+                      type: string
+                      description: original title of this movie
+                    budget:
+                      type: integer
+                      description: budget of this movie
+                    popularity:
+                      type: integer
+                      description: popularity of this movie
+                    release_date:
+                      type: string
+                      description: release date of this movie
+                    revenue:
+                      type: integer
+                      description: revenue of this movie
+                    title:
+                      type: string
+                      description: title of this movie
+                    vote_average:
+                      type: number
+                      description: vote average of this movie
+                    vote_count:
+                      type: integer
+                      description: vote count of this movie
+                    overview:
+                      type: string
+                      description: overview of this movie
+                    tagline:
+                      type: string
+                      description: tagline of this movie
+                    uid:
+                      type: integer
+                      description: uid of this movie
+                    director_id:
+                      type: integer
+                      description: id of this director assiciated with
+  /movie/search:
+    get:
+      operationId: movies.search_title
+      tags:
+        - Movies
+      summary: Search the entire set of Movies for all directors,.
+      description: Search the entire set of Movies for all directors, sorted by timestamp
+      parameters:
+        - name: title
+          in: query
+          type: string
+          required: true
+          description: name of the movie
+        - name: limit
+          in: query
+          type: integer
+          required: false
+          description: Limit movie list to get
       responses:
         200:
           description: Successfully read Movies for all directors operation

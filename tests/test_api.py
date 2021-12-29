@@ -11,6 +11,10 @@ client = connex_app.test_client()
 
 
 def test_director_read_all():
+    """
+    test GET director
+    """
+
     url = '/api/director?limit=3'
 
     response = client.get(url)
@@ -20,6 +24,9 @@ def test_director_read_all():
 
 
 def test_director_read_all_limit():
+    '''
+    test get director with limit
+    '''
     limit = 253
     url = f'/api/director?limit={limit}'
 
@@ -31,6 +38,9 @@ def test_director_read_all_limit():
 
 
 def test_director_read_one():
+    '''
+    test get director with id
+    '''
     director_id = 4762
     url = f'/api/director/{director_id}'
 
@@ -43,6 +53,9 @@ def test_director_read_one():
 
 
 def test_director_read_one_404():
+    '''
+    test get with wrong value
+    '''
     director_id = 1
     url = f'/api/director/{director_id}'
 
@@ -55,6 +68,9 @@ def test_director_read_one_404():
 
 
 def test_post_director_500():
+    '''
+    test post with wrong value
+    '''
     url = '/api/director'
     mock_data_fail = {"department": ""}
     mock_request_headers = {'Content-Type': 'application/json'}
@@ -76,6 +92,9 @@ mock_request_headers = {'Content-Type': 'application/json'}
 
 
 def test_post_director_create():
+    '''
+    test post director
+    '''
     url = '/api/director'
 
     res = client.post(url,
@@ -88,9 +107,12 @@ def test_post_director_create():
 
 
 def test_put_director():
+    '''
+    test put director
+    '''
     director = (Directors.query.filter(
         Directors.name == mock_data_director['name'])
-    ).outerjoin(Movies).one_or_none()
+                ).outerjoin(Movies).one_or_none()
     director_schema = DirectorsSchema()
     data = director_schema.dump(director)
     mock_data_director['gender'] = 2
@@ -107,9 +129,12 @@ def test_put_director():
 
 
 def test_delete_director():
+    '''
+    test delete director
+    '''
     director = (Directors.query.filter(
         Directors.name == mock_data_director['name'])
-    ).outerjoin(Movies).one_or_none()
+                ).outerjoin(Movies).one_or_none()
     director_schema = DirectorsSchema()
     data = director_schema.dump(director)
     url = f"/api/director/{data['id']}"
@@ -119,7 +144,11 @@ def test_delete_director():
 
 ###################################################################################################################
 
+
 def test_movie_read_all():
+    '''
+    test get movie
+    '''
     url = '/api/movie?limit=3'
 
     response = client.get(url)
@@ -130,6 +159,9 @@ def test_movie_read_all():
 
 
 def test_movie_read_all_limit():
+    '''
+    test get movie with limit
+    '''
     limit = 322
     url = f'/api/movie?limit={322}'
 
@@ -141,6 +173,9 @@ def test_movie_read_all_limit():
 
 
 def test_movie_read_one():
+    '''
+    test get movie with id
+    '''
     director_id = 4762
     movie_id = 43597
     url = f'/api/director/{director_id}/movie/{movie_id}'
@@ -155,6 +190,9 @@ def test_movie_read_one():
 
 
 def test_movie_read_one_404():
+    '''
+    test get movie with wrong id
+    '''
     director_id = 1
     movie_id = 123
     url = f'/api/director/{director_id}/movie/{movie_id}'
@@ -183,6 +221,9 @@ mock_data_movie = {
 
 
 def test_post_movie_create():
+    '''
+    test post movie
+    '''
     director_id = 4768
     url = f'/api/movie/{director_id}/movie'
     res = client.post(url,
@@ -195,10 +236,13 @@ def test_post_movie_create():
 
 
 def test_put_movie():
+    '''
+    test put movie
+    '''
     director_id = 4768
     movie = (Movies.query.filter(
         Movies.title == mock_data_movie['title']).filter(
-        Movies.uid == mock_data_movie['uid']).one_or_none())
+            Movies.uid == mock_data_movie['uid']).one_or_none())
     movie_schema = MoviesSchema()
     data = movie_schema.dump(movie)
     mock_data_movie['popularity'] = 2
@@ -215,10 +259,13 @@ def test_put_movie():
 
 
 def test_delete_movie():
+    '''
+    test delete movie
+    '''
     director_id = 4768
     movie = (Movies.query.filter(
         Movies.title == mock_data_movie['title']).filter(
-        Movies.uid == mock_data_movie['uid']).one_or_none())
+            Movies.uid == mock_data_movie['uid']).one_or_none())
     movie_schema = MoviesSchema()
     data = movie_schema.dump(movie)
     url = f"/api/director/{director_id}/movie/{data['id']}"
